@@ -1,0 +1,7 @@
+pandas
+numpy
+scikit-learn
+optuna
+openpyxl
+lightgbm
+openfe
