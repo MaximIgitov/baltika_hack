@@ -12,7 +12,7 @@ import optuna
 import pickle
 
 
-class ProblemClassifier:
+class ReasonClassifier:
     def __init__(self, model_path: str = 'pipeline/models/reason_classifier.pkl'):
         self.model_path = model_path
         self.vectorizer = TfidfVectorizer(max_features=10000, ngram_range=(1, 2))
@@ -58,6 +58,6 @@ class ProblemClassifier:
 
 
 if __name__ == '__main__':
-    classifier = ProblemClassifier()
+    classifier = ReasonClassifier()
     classifier.fit_reason_classifier()
     print(classifier.predict_reason_classifier('Сломался дроссель'))

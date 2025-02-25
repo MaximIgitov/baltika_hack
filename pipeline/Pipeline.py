@@ -11,6 +11,7 @@ from openfe import OpenFE, transform
 
 from typing import Tuple
 
+from pipeline.ReasonClassifier import ReasonClassifier
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -30,7 +31,8 @@ model2 = 0
 
 def insert_breakdown(reason: str, start: pd.Timestamp, end: pd.Timestamp, duration: float) -> None:
     # Генерация короткого имени на основе уже размеченных данных
-    reason_short = <...>(reason)
+    reason_classifier = ReasonClassifier()
+    reason_short = reason_classifier.predict_reason_classifier(reason)
     df = df.concat(df, pd.DataFrame({"start": start, "end": end, "reason": reason, "duration": duration, "reason_short": reason_short}))
     df.drop_duplicates()
 
