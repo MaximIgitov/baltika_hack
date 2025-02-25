@@ -9,6 +9,12 @@ import lightgbm as lgb
 
 from openfe import OpenFE, transform
 
+from typing import Tuple
+
+import warnings
+warnings.filterwarnings("ignore")
+
+
 # Датасет, хранящий ошибки
 df = pd.read_excel("Categorical breakdowns.xlsx")
 
@@ -231,4 +237,36 @@ def fit_model(reason: str, top_breakdowns_num: int = 4) -> None:
     model2 = lgb.LGBMClassifier(**best_params, random_state=42)
 
     model2.fit(train_x, y_train)
+    
+def predict(time_range: pd.core.indexes.datetimes.DatetimeIndex) -> Tuple[np.array]:
+    # Создаем новые DataFrames для хранения признаков
+    feature_rows = []  # Список для хранения строк признаков
+    
+    for now in time_range:
+        # Создаем строку для текущего времени
+        new_feature_row = {'date': now}  # Заполняем временные рамки
+        
+        for reason in df['reason_short'].unique():
+        
+            for window in WINDOW_SIZES:
+                # Время начала окна
+                start_window = now - pd.Timedelta(days=window)
+                
+                # Фильтруем строки по текущему reason_short и временным границам
+                mask = (df['reason_short'] == reason) & (df['start'] < now) & (df['end'] > start_window)
+                filtered_df = df[mask]
+                    
+                new_feature_row[f'{reason}_within_last_{window}_days'] = int(not filtered_df.empty)
+                new_feature_row[f'{reason}_count_last_{window}_days'] = len(filtered_df)
+                new_feature_row[f'{reason}_duration_sum_last_{window}_days'] = filtered_df['duration'].sum() if not filtered_df.empty else 0
+                
+        # Добавляем новую строку в список признаков
+        feature_rows.append(new_feature_row)
+
+    # Создаем DataFrame из списков строк
+    X = pd.DataFrame(feature_rows)
+    
+    # Возвращаем вероятности разных ошибок быть следующими
+    # и вероятность возникновения определенной ошибки на определенный горизонт
+    return (model1.predict_proba(X), model2.predict_proba(X))
     
