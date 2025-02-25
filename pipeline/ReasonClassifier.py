@@ -1,5 +1,5 @@
-# import sys
-# sys.path.append(r'D:\repositories\baltika_hack')
+import sys
+sys.path.append(r'D:\repositories\baltika_hack')
 
 import pandas as pd
 import numpy as np
@@ -37,7 +37,6 @@ class ReasonClassifier:
 
         study = optuna.create_study(direction='maximize')
         study.optimize(objective, n_trials=50)
-
         best_model = LogisticRegression(C=study.best_params['C'], multi_class='ovr', solver='lbfgs', max_iter=1000)
         X_vec = self.vectorizer.fit_transform(X)
         best_model.fit(X_vec, y)
