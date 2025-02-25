@@ -56,4 +56,4 @@ class ReasonClassifier:
 if __name__ == '__main__':
     classifier = ReasonClassifier()
     classifier.fit_reason_classifier()
-    print(classifier.predict_reason_classifier('Замена дросселя'))
+    print(classifier.predict_reason_classifier('Поломка дросселя'))
