@@ -1,5 +1,5 @@
-import sys
-sys.path.append(r'D:\repositories\baltika_hack')
+# import sys
+# sys.path.append(r'D:\repositories\baltika_hack')
 
 import pandas as pd
 import numpy as np
