@@ -5,3 +5,4 @@ optuna
 openpyxl
 lightgbm
 openfe
+tqdm

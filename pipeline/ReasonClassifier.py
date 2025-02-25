@@ -1,6 +1,3 @@
-# import sys
-# sys.path.append(r'D:\repositories\baltika_hack')
-
 import pandas as pd
 import numpy as np
 import os
@@ -59,4 +56,4 @@ class ReasonClassifier:
 if __name__ == '__main__':
     classifier = ReasonClassifier()
     classifier.fit_reason_classifier()
-    print(classifier.predict_reason_classifier('Сломался дроссель'))
+    print(classifier.predict_reason_classifier('Замена дросселя'))

@@ -15,13 +15,13 @@ from typing import Tuple
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
-import warnings
+from tqdm import tqdm
 
 from ReasonClassifier import ReasonClassifier
 from ReasonClassifier import ReasonClassifier
 import warnings
 warnings.filterwarnings("ignore")
-
+optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 class BreakdownPredictor:
     def __init__(self, model1_path: str = 'pipeline/models/breakdown_model1.pkl', model2_path: str = 'pipeline/models/breakdown_model2.pkl'):
@@ -46,7 +46,7 @@ class BreakdownPredictor:
         feature_rows = []
         target_rows = []
 
-        for now in time_range:
+        for now in tqdm(time_range):
             new_feature_row = {'date': now}
             new_target_row = {'date': now}
 
@@ -74,6 +74,7 @@ class BreakdownPredictor:
 
         feature_df = pd.DataFrame(feature_rows)
         target_df = pd.DataFrame(target_rows)
+        print("Writing data to files...")
         feature_df.to_excel("pipeline/resources/Features_3H.xlsx", index=False)
         target_df.to_excel("pipeline/resources/Target_3H.xlsx", index=False)
 
@@ -184,11 +185,17 @@ class BreakdownPredictor:
 
 
 if __name__ == '__main__':
+    print("Starting usage case example demonstration!\nFitting reason classifier...")
     reason_classifier = ReasonClassifier()
     reason_classifier.fit_reason_classifier()
-
+    
+    print("Reason classifier fitted.\nGenerating all the necessary data for predictions...")
     breakdown_predictor = BreakdownPredictor()
     breakdown_predictor.generate_features_and_targets(pd.Timestamp('2023-01-01'), pd.Timestamp('2023-12-31'))
+    
+    print("Fitting models...")
     breakdown_predictor.fit_model('Замена двух дросселей')
+    
+    print("Predicting...")
     predictions = breakdown_predictor.predict(pd.date_range(start=pd.Timestamp('2024-01-01'), periods=10, freq='3h'))
     print(predictions)
