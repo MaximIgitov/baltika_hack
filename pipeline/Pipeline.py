@@ -11,13 +11,13 @@ from openfe import OpenFE, transform
 
 from typing import Tuple
 
-from pipeline.ReasonClassifier import ReasonClassifier
+from ReasonClassifier import ReasonClassifier
 import warnings
 warnings.filterwarnings("ignore")
 
 
 # Датасет, хранящий ошибки
-df = pd.read_excel("Categorical breakdowns.xlsx")
+df = pd.read_excel("../Categorical breakdowns (V4).xlsx")
 
 # Датасеты признаков и таргетов, генерируемые из датасета ошибок
 feature_data = pd.read_excel("Features_3H.xlsx")
@@ -86,7 +86,7 @@ def generate_features_and_targets(start: pd.Timestamp, end: pd.Timestamp, freq: 
     target_df = pd.DataFrame(target_rows)
 
 
-def fit_model(reason: str, top_breakdowns_num: int = 4) -> None:
+def fit_models(reason: str, top_breakdowns_num: int = 4, leave_important_features: int = 50) -> None:
     global feature_data, target_data, model1, model2
     top_breakdowns = target_data["next_breakdown"].value_counts().nlargest(top_breakdowns_num).index
     target_data_red = target_data[target_data["next_breakdown"].isin(top_breakdowns)]
@@ -139,7 +139,7 @@ def fit_model(reason: str, top_breakdowns_num: int = 4) -> None:
     feature_importance_df = feature_importance_df.sort_values(by='Importance', ascending=False)
 
     # Отберем 50 самых важных признаков
-    feature_importance_df_selected = feature_importance_df[:50]
+    feature_importance_df_selected = feature_importance_df[:leave_important_features]
     
     X = feature_data_red.drop(columns=["date"])[feature_importance_df_selected["Feature"]]
 
@@ -209,7 +209,7 @@ def fit_model(reason: str, top_breakdowns_num: int = 4) -> None:
     feature_importance_df = feature_importance_df.sort_values(by='Importance', ascending=False)
 
     # Отберем 50 самых важных признаков
-    feature_importance_df_selected = feature_importance_df[:50]
+    feature_importance_df_selected = feature_importance_df[:leave_important_features]
     
     X = feature_data.drop(columns=["date"])[feature_importance_df_selected["Feature"]]
 
@@ -272,3 +272,6 @@ def predict(time_range: pd.core.indexes.datetimes.DatetimeIndex) -> Tuple[np.arr
     # и вероятность возникновения определенной ошибки на определенный горизонт
     return (model1.predict_proba(X), model2.predict_proba(X))
     
+#insert_breakdown(start=pd.Timestamp("2020-01-01"), end=pd.Timestamp("2020-01-02"), reason="Иные поломки", duration = 4.167)
+#generate_features_and_targets(start=pd.Timestamp("2022-01-01"), end=pd.Timestamp("2024-01-02"))
+#fit_models(reason="Иные поломки", leave_important_features=1)
