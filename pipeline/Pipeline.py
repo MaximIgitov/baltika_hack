@@ -171,7 +171,7 @@ class BreakdownPredictor:
 
             feature_rows.append(new_feature_row)
 
-        X = pd.DataFrame(feature_rows)
+        X = pd.DataFrame(feature_rows).drop(columns=["date"])
 
         if self.model1 is None:
             with open(self.model1_path, 'rb') as f:
